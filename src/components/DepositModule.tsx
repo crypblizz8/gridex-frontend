@@ -26,6 +26,10 @@ import PlaceOrderABI from "../abis/PlaceOrderABI.json";
   }
   ```
 */
+
+interface DepositModuleProps {
+  setSuccessTx: (successTx: boolean) => void;
+}
 const tabs = [
   { name: "Deposit", href: "#", current: false },
   // {name: "Withdraw", href: "#", current: false},
@@ -56,7 +60,7 @@ const someRendering = (
   </div>
 );
 
-export default function DespositModule() {
+export default function DespositModule({ setSuccessTx }: DepositModuleProps) {
   const [depositComp, setDepositcomp] = useState(true);
   const { address } = useAccount();
   const { data: currentBlock } = useBlockNumber();
@@ -68,7 +72,7 @@ export default function DespositModule() {
     },
   });
   console.log("prepError", prepError);
-  const { sendTransaction } = useSendTransaction(config);
+  const { sendTransaction, isSuccess } = useSendTransaction(config);
 
   // const {config} = usePrepareContractWrite({
   //     address: "0x36e56cc52d7a0af506d1656765510cd930ff1595",
@@ -88,7 +92,13 @@ export default function DespositModule() {
 
   // const {data: makeOrderPlace, isSuccess, write} = useContractWrite(config);
 
-  useEffect(() => {}, [depositComp]);
+  useEffect(() => {
+    if (isSuccess) {
+      setTimeout(() => {
+        setSuccessTx(true);
+      }, 2000);
+    }
+  }, [depositComp, isSuccess, setSuccessTx]);
 
   const { data } = useBalance({
     address: address,
